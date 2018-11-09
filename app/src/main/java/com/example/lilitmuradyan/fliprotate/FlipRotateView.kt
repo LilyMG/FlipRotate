@@ -28,9 +28,13 @@ class FlipRotateView : View {
        val display = wm.defaultDisplay
        val size = Point()
        display.getSize(size)
-       val screenWidth = size.x
-       val screenHeight = size.y
-       bitmapMatrix?.postScale( screenWidth/(image!!.width).toFloat(), screenWidth/(image!!.width).toFloat())
+       var scaleAmount: Float
+       scaleAmount = if (image!!.width > image!!.height) {
+           size.x / (image!!.width).toFloat()
+       } else {
+           size.y / (image!!.height).toFloat()
+       }
+       bitmapMatrix?.postScale(scaleAmount, scaleAmount)
 //       bitmapMatrix?.postTranslate( width.toFloat()/2, height.toFloat()/2)
    }
 
