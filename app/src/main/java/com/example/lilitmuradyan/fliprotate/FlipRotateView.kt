@@ -21,7 +21,7 @@ class FlipRotateView : View {
         paint = Paint(Paint.ANTI_ALIAS_FLAG)
         bitmapMatrix = Matrix()
     }
-
+ 
    fun setBitmap(image: Bitmap?){
        this.image = image
        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
