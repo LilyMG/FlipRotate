@@ -1,5 +1,6 @@
 package com.example.lilitmuradyan.fliprotate
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
@@ -7,19 +8,17 @@ import android.view.View
 import android.util.Log
 import android.view.WindowManager
 import android.graphics.Bitmap
-
-
+import android.view.animation.LinearInterpolator
 
 
 class FlipRotateView : View {
 
-    var image: Bitmap? = null
     private var paint: Paint? = null
     private var bitmapMatrix: Matrix? = null
     private var displayX = 0
     private var displayY = 0
     private var defaultScaleAmount = 1f
-
+    var flipRotateItem : FlipRotateItem = FlipRotateItem()
 
     constructor(ctx: Context, attributeSet: AttributeSet) : super(ctx, attributeSet) {
         setBackgroundColor(Color.GRAY)
@@ -34,38 +33,51 @@ class FlipRotateView : View {
     }
 
     fun rotateRight() {
-        bitmapMatrix?.postRotate(5f, displayX/2f, displayY/2f)
+        start(100)
+        flipRotateItem.rotateAngle += 90
+    }
+
+    fun start(secs: Long) {
+        var mTimerAnimator = ValueAnimator.ofInt(0, 90)
+        mTimerAnimator.duration = secs
+        mTimerAnimator.interpolator = LinearInterpolator()
+        mTimerAnimator.addUpdateListener { animation -> animateView(animation.animatedValue as Int) }
+        mTimerAnimator.start()
+    }
+
+    private fun animateView(progress: Int) {
+        bitmapMatrix!!.setRotate(flipRotateItem.rotateAngle + progress.toFloat(), displayX/2f, displayY/2f)
         invalidate()
     }
 
     fun setBitmap(image: Bitmap?) {
-        this.image = image
+        flipRotateItem.image = image
         calculateDefaultScale()
         centerImage()
     }
 
     private fun calculateDefaultScale() {
-        defaultScaleAmount = if (image!!.width > image!!.height) {
-            (displayX / (image!!.width).toFloat())
+        defaultScaleAmount = if (flipRotateItem.image!!.width > flipRotateItem.image!!.height) {
+            (displayX / (flipRotateItem.image!!.width).toFloat())
         } else {
-            (displayY / (image!!.height).toFloat())
+            (displayY / (flipRotateItem.image!!.height).toFloat())
         }
         bitmapMatrix?.postScale(defaultScaleAmount, defaultScaleAmount)
     }
 
     private fun centerImage(){
-        bitmapMatrix!!.postTranslate(displayX/2f - defaultScaleAmount * image!!.width/2f, displayY/2f - defaultScaleAmount * image!!.height/2 )
+        bitmapMatrix!!.postTranslate(displayX/2f - defaultScaleAmount * flipRotateItem.image!!.width/2f, displayY/2f - defaultScaleAmount * flipRotateItem.image!!.height/2 )
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawBitmap(image, bitmapMatrix, paint)
+        canvas.drawBitmap(flipRotateItem.image, bitmapMatrix, paint)
 
         val info = String.format("Info: size = %s x %s, bytes = %s (%s), config = %s",
-                image?.width,
-                image?.height,
-                image?.byteCount,
-                image?.rowBytes,
-                image?.config)
+                flipRotateItem.image?.width,
+                flipRotateItem.image?.height,
+                flipRotateItem.image?.byteCount,
+                flipRotateItem.image?.rowBytes,
+                flipRotateItem.image?.config)
         Log.d("FlipRotateView", info)
     }
 }
