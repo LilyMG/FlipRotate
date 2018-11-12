@@ -6,6 +6,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.util.Log
 import android.view.WindowManager
+import android.graphics.Bitmap
+
+
 
 
 class FlipRotateView : View {
@@ -22,7 +25,7 @@ class FlipRotateView : View {
     }
 
     fun rotateRight() {
-        bitmapMatrix?.postRotate(25f)
+        bitmapMatrix?.postRotate(5f, image!!.width/2f, image!!.height/2f)
         invalidate()
     }
 
@@ -31,7 +34,7 @@ class FlipRotateView : View {
         calculateDefaultScale()
     }
 
-    fun calculateDefaultScale() {
+    private fun calculateDefaultScale() {
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val display = wm.defaultDisplay
         val size = Point()
