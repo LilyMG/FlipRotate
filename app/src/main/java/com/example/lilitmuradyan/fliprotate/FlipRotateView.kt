@@ -16,36 +16,45 @@ class FlipRotateView : View {
     var image: Bitmap? = null
     private var paint: Paint? = null
     private var bitmapMatrix: Matrix? = null
+    private var displayX = 0
+    private var displayY = 0
+    private var defaultScaleAmount = 1f
 
 
     constructor(ctx: Context, attributeSet: AttributeSet) : super(ctx, attributeSet) {
         setBackgroundColor(Color.GRAY)
         paint = Paint(Paint.ANTI_ALIAS_FLAG)
         bitmapMatrix = Matrix()
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = wm.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+        displayX = size.x
+        displayY = size.y
     }
 
     fun rotateRight() {
-        bitmapMatrix?.postRotate(5f, image!!.width/2f, image!!.height/2f)
+        bitmapMatrix?.postRotate(5f, displayX/2f, displayY/2f)
         invalidate()
     }
 
     fun setBitmap(image: Bitmap?) {
         this.image = image
         calculateDefaultScale()
+        centerImage()
     }
 
     private fun calculateDefaultScale() {
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display = wm.defaultDisplay
-        val size = Point()
-        display.getSize(size)
-        var scaleAmount: Float
-        scaleAmount = if (image!!.width > image!!.height) {
-            size.x / (image!!.width).toFloat()
+        defaultScaleAmount = if (image!!.width > image!!.height) {
+            (displayX / (image!!.width).toFloat())
         } else {
-            size.y / (image!!.height).toFloat()
+            (displayY / (image!!.height).toFloat())
         }
-        bitmapMatrix?.postScale(scaleAmount, scaleAmount)
+        bitmapMatrix?.postScale(defaultScaleAmount, defaultScaleAmount)
+    }
+
+    private fun centerImage(){
+        bitmapMatrix!!.postTranslate(displayX/2f - defaultScaleAmount * image!!.width/2f, displayY/2f - defaultScaleAmount * image!!.height/2 )
     }
 
     override fun onDraw(canvas: Canvas) {
