@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, REQUEST_SELECT_IMAGE_IN_ALBUM)
         }
+        rotate_right.setOnClickListener {flip_rotate_view.rotateRight()}
 
     }
 

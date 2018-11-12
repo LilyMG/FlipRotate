@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.WindowManager
 
 
-
 class FlipRotateView : View {
 
     var image: Bitmap? = null
@@ -21,22 +20,30 @@ class FlipRotateView : View {
         paint = Paint(Paint.ANTI_ALIAS_FLAG)
         bitmapMatrix = Matrix()
     }
- 
-   fun setBitmap(image: Bitmap?){
-       this.image = image
-       val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-       val display = wm.defaultDisplay
-       val size = Point()
-       display.getSize(size)
-       var scaleAmount: Float
-       scaleAmount = if (image!!.width > image!!.height) {
-           size.x / (image!!.width).toFloat()
-       } else {
-           size.y / (image!!.height).toFloat()
-       }
-       bitmapMatrix?.postScale(scaleAmount, scaleAmount)
-//       bitmapMatrix?.postTranslate( width.toFloat()/2, height.toFloat()/2)
-   }
+
+    fun rotateRight() {
+        bitmapMatrix?.postRotate(25f)
+        invalidate()
+    }
+
+    fun setBitmap(image: Bitmap?) {
+        this.image = image
+        calculateDefaultScale()
+    }
+
+    fun calculateDefaultScale() {
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = wm.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+        var scaleAmount: Float
+        scaleAmount = if (image!!.width > image!!.height) {
+            size.x / (image!!.width).toFloat()
+        } else {
+            size.y / (image!!.height).toFloat()
+        }
+        bitmapMatrix?.postScale(scaleAmount, scaleAmount)
+    }
 
     override fun onDraw(canvas: Canvas) {
         canvas.drawBitmap(image, bitmapMatrix, paint)
