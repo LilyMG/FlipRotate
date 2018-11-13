@@ -16,9 +16,16 @@
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<Button
+		android:id="@+id/rotate_left"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:text="left" />
+
+	<Button
 		android:id="@+id/rotate_right"
 		android:layout_width="48dp"
 		android:layout_height="48dp"
-		android:text="right" />
+		android:text="right"
+		app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

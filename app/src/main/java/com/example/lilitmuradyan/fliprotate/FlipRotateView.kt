@@ -18,7 +18,7 @@ class FlipRotateView : View {
     private var displayX = 0
     private var displayY = 0
     private var defaultScaleAmount = 1f
-    var flipRotateItem : FlipRotateItem = FlipRotateItem()
+    var flipRotateItem: FlipRotateItem = FlipRotateItem()
 
     constructor(ctx: Context, attributeSet: AttributeSet) : super(ctx, attributeSet) {
         setBackgroundColor(Color.GRAY)
@@ -33,12 +33,22 @@ class FlipRotateView : View {
     }
 
     fun rotateRight() {
-        start(100)
+        start(100, 1)
         flipRotateItem.rotateAngle += 90
     }
 
-    fun start(secs: Long) {
-        var mTimerAnimator = ValueAnimator.ofInt(0, 90)
+    fun rotateLeft() {
+        start(100, 0)
+        flipRotateItem.rotateAngle -= 90
+    }
+
+    //    direction 0 -> right, 1-> left
+    fun start(secs: Long, direction: Int) {
+        var mTimerAnimator: ValueAnimator = if (direction == 0) {
+            ValueAnimator.ofInt(90, 0)
+        } else {
+            ValueAnimator.ofInt(0, 90)
+        }
         mTimerAnimator.duration = secs
         mTimerAnimator.interpolator = LinearInterpolator()
         mTimerAnimator.addUpdateListener { animation -> animateView(animation.animatedValue as Int) }
@@ -46,7 +56,7 @@ class FlipRotateView : View {
     }
 
     private fun animateView(progress: Int) {
-        bitmapMatrix!!.setRotate(flipRotateItem.rotateAngle + progress.toFloat(), displayX/2f, displayY/2f)
+        bitmapMatrix!!.setRotate(flipRotateItem.rotateAngle + progress.toFloat(), displayX / 2f, displayY / 2f)
         invalidate()
     }
 
@@ -65,8 +75,8 @@ class FlipRotateView : View {
         bitmapMatrix?.postScale(defaultScaleAmount, defaultScaleAmount)
     }
 
-    private fun centerImage(){
-        bitmapMatrix!!.postTranslate(displayX/2f - defaultScaleAmount * flipRotateItem.image!!.width/2f, displayY/2f - defaultScaleAmount * flipRotateItem.image!!.height/2 )
+    private fun centerImage() {
+        bitmapMatrix!!.postTranslate(displayX / 2f - defaultScaleAmount * flipRotateItem.image!!.width / 2f, displayY / 2f - defaultScaleAmount * flipRotateItem.image!!.height / 2)
     }
 
     override fun onDraw(canvas: Canvas) {
