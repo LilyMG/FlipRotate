@@ -64,7 +64,7 @@ class FlipRotateView : View {
         mTimerAnimator.start()
     }
 
-    fun startFlippingAnimation(secs: Long, direction: Int) {
+    private fun startFlippingAnimation(secs: Long, direction: Int) {
         var mTimerAnimator: ValueAnimator = ValueAnimator.ofFloat(1f, -1f)
         mTimerAnimator.duration = secs
         mTimerAnimator.interpolator = LinearInterpolator()
@@ -73,13 +73,11 @@ class FlipRotateView : View {
     }
 
     fun flipHorizontally() {
-        bitmapMatrix!!.postScale(-1f, 1f, displayX / 2f, displayY / 2f)
-        invalidate()
+        startFlippingAnimation(100, FLIP_HORIZONTALLY)
     }
 
     fun flipVertically() {
-        bitmapMatrix!!.postScale(1f, -1f, displayX / 2f, displayY / 2f)
-        invalidate()
+        startFlippingAnimation(100, FLIP_VERTICALLY)
     }
 
     private fun rotateWithAnimation(progress: Int, direction: Int) {
@@ -91,7 +89,10 @@ class FlipRotateView : View {
     }
 
     private fun flipWithAnimation(progress: Float, direction: Int) {
-        bitmapMatrix!!.postScale(defaultScaleAmount, -1f, displayX / 2f, displayY / 2f)
+        if (direction == FLIP_HORIZONTALLY)
+            bitmapMatrix!!.setScale(defaultScaleAmount * progress, 1f, displayX / 2f, displayY / 2f)
+        else
+            bitmapMatrix!!.setScale(1f, defaultScaleAmount * progress, displayX / 2f, displayY / 2f)
         invalidate()
     }
 
