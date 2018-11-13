@@ -4,10 +4,9 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.view.View
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
-import android.graphics.Bitmap
 import android.view.animation.LinearInterpolator
 
 
@@ -18,7 +17,11 @@ class FlipRotateView : View {
     private var displayX = 0
     private var displayY = 0
     private var defaultScaleAmount = 1f
-    var flipRotateItem: FlipRotateItem = FlipRotateItem()
+    private var flipRotateItem: FlipRotateItem = FlipRotateItem()
+    private val ROTATE_LEFT = 0
+    private val ROTATE_RIGHT = 1
+    private val FLIP_HORIZONTALLY = 2
+    private val FLIP_VERTICALLY = 3
 
     constructor(ctx: Context, attributeSet: AttributeSet) : super(ctx, attributeSet) {
         setBackgroundColor(Color.GRAY)
@@ -33,30 +36,54 @@ class FlipRotateView : View {
     }
 
     fun rotateRight() {
-        start(100, 1)
+        startRotatingAnimation(100, ROTATE_RIGHT)
         flipRotateItem.rotateAngle += 90
     }
 
     fun rotateLeft() {
-        start(100, 0)
+        startRotatingAnimation(100, ROTATE_LEFT)
         flipRotateItem.rotateAngle -= 90
     }
 
-    //    direction 0 -> right, 1-> left
-    fun start(secs: Long, direction: Int) {
-        var mTimerAnimator: ValueAnimator = if (direction == 0) {
+    //    direction 1 -> right, 0-> left
+    fun startRotatingAnimation(secs: Long, direction: Int) {
+        var mTimerAnimator: ValueAnimator = if (direction == ROTATE_LEFT) {
             ValueAnimator.ofInt(90, 0)
         } else {
             ValueAnimator.ofInt(0, 90)
         }
         mTimerAnimator.duration = secs
         mTimerAnimator.interpolator = LinearInterpolator()
-        mTimerAnimator.addUpdateListener { animation -> animateView(animation.animatedValue as Int) }
+        mTimerAnimator.addUpdateListener { animation -> rotateWithAnimation(animation.animatedValue as Int) }
         mTimerAnimator.start()
     }
 
-    private fun animateView(progress: Int) {
+    fun startFlippingAnimation(secs: Long, direction: Int){
+        var mTimerAnimator: ValueAnimator = ValueAnimator.ofFloat(1f, -1f)
+        mTimerAnimator.duration = secs
+        mTimerAnimator.interpolator = LinearInterpolator()
+        mTimerAnimator.addUpdateListener { animation -> flipWithAnimation(animation.animatedValue as Float, direction) }
+        mTimerAnimator.start()
+    }
+
+    fun flipHorizontally(){
+        bitmapMatrix!!.postScale(-1f, 1f, displayX/2f, displayY/2f)
+        invalidate()
+    }
+
+    fun flipVertically(){
+        bitmapMatrix!!.postScale(1f, -1f, displayX/2f, displayY/2f)
+        invalidate()
+    }
+
+
+    private fun rotateWithAnimation(progress: Int) {
         bitmapMatrix!!.setRotate(flipRotateItem.rotateAngle + progress.toFloat(), displayX / 2f, displayY / 2f)
+        invalidate()
+    }
+
+    private fun flipWithAnimation(progress: Float, direction: Int) {
+        bitmapMatrix!!.postScale(defaultScaleAmount, -1f, displayX/2f, displayY/2f)
         invalidate()
     }
 

@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
         }
         rotate_right.setOnClickListener {flip_rotate_view.rotateRight()}
         rotate_left.setOnClickListener {flip_rotate_view.rotateLeft()}
+        flip_horizontal.setOnClickListener {flip_rotate_view.flipHorizontally()}
+        flip_vertical.setOnClickListener {flip_rotate_view.flipVertically()}
 
     }
 

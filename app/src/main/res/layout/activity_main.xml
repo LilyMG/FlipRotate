@@ -16,16 +16,39 @@
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<Button
+		android:textAllCaps="false"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toLeftOf="@id/rotate_right"
 		android:id="@+id/rotate_left"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
+		android:layout_width="96dp"
+		android:layout_height="56dp"
 		android:text="left" />
 
 	<Button
+		android:textAllCaps="false"
+		app:layout_constraintLeft_toRightOf="@id/rotate_left"
+		app:layout_constraintRight_toLeftOf="@id/flip_vertical"
 		android:id="@+id/rotate_right"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
-		android:text="right"
-		app:layout_constraintRight_toRightOf="parent" />
+		android:layout_width="96dp"
+		android:layout_height="56dp"
+		android:text="right"/>
+
+	<Button
+		android:textAllCaps="false"
+		app:layout_constraintLeft_toRightOf="@id/rotate_right"
+		app:layout_constraintRight_toLeftOf="@id/flip_horizontal"
+		android:id="@+id/flip_vertical"
+		android:layout_width="96dp"
+		android:layout_height="56dp"
+		android:text="flip vertical"/>
+
+	<Button
+		android:textAllCaps="false"
+		app:layout_constraintLeft_toRightOf="@id/flip_vertical"
+		app:layout_constraintRight_toRightOf="parent"
+		android:id="@+id/flip_horizontal"
+		android:layout_width="96dp"
+		android:layout_height="56dp"
+		android:text="flip horizontal"/>
 
 </android.support.constraint.ConstraintLayout>
