@@ -11,8 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
-    val REQUEST_SELECT_IMAGE_IN_ALBUM = 0
-    var srcBitmap = null as Bitmap?
+    private val REQUEST_SELECT_IMAGE_IN_ALBUM = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        var srcBitmap = null as Bitmap?
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_SELECT_IMAGE_IN_ALBUM) {
             srcBitmap = manageImageFromUri(data?.data!!)
         }
