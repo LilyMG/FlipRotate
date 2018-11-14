@@ -65,10 +65,27 @@ class FlipRotateView : View {
     }
 
     private fun startFlippingAnimation(secs: Long, direction: Int) {
-        var mTimerAnimator: ValueAnimator = ValueAnimator.ofFloat(1f, -1f)
+        var mTimerAnimator = ValueAnimator()
+        if (direction == FLIP_HORIZONTALLY) {
+            mTimerAnimator = if (flipRotateItem.isFlippedHorizontally)
+                ValueAnimator.ofFloat(-1f, 1f)
+            else ValueAnimator.ofFloat(1f, -1f)
+        } else if (direction == FLIP_VERTICALLY) {
+            mTimerAnimator = if (flipRotateItem.isFlippedVertically)
+                ValueAnimator.ofFloat(-1f, 1f)
+            else ValueAnimator.ofFloat(1f, -1f)
+        }
         mTimerAnimator.duration = secs
         mTimerAnimator.interpolator = LinearInterpolator()
         mTimerAnimator.addUpdateListener { animation -> flipWithAnimation(animation.animatedValue as Float, direction) }
+        mTimerAnimator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                if (direction == FLIP_HORIZONTALLY)
+                    flipRotateItem.isFlippedHorizontally = !flipRotateItem.isFlippedHorizontally
+                else if (direction == FLIP_VERTICALLY)
+                    flipRotateItem.isFlippedVertically = !flipRotateItem.isFlippedVertically
+            }
+        })
         mTimerAnimator.start()
     }
 
