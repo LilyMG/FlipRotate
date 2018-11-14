@@ -10,6 +10,8 @@ import android.view.WindowManager
 import android.view.animation.LinearInterpolator
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.graphics.PointF
+import android.view.MotionEvent
 
 
 class FlipRotateView : View {
@@ -25,8 +27,85 @@ class FlipRotateView : View {
     private val FLIP_HORIZONTALLY = 2
     private val FLIP_VERTICALLY = 3
     var temporaryRotationProgress = 0f
+    var TAG = "FlipROtateView"
+    // These matrices will be used to move and zoom image
+    var savedMatrix = Matrix()
+
+    // We can be in one of these 3 states
+    val NONE = 0
+    val DRAG = 1
+    val ZOOM = 2
+    var mode = NONE
+
+    // Remember some things for zooming
+    var start = PointF()
+    var mid = PointF()
+    var oldDist = 1f
 
 
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        val scale: Float
+
+        // Handle touch events here...
+        when (event!!.action and MotionEvent.ACTION_MASK) {
+
+            MotionEvent.ACTION_DOWN //first finger down only
+            -> {
+                savedMatrix.set(bitmapMatrix)
+                start.set(event.x, event.y)
+                Log.d(TAG, "mode=DRAG")
+                mode = DRAG
+            }
+            MotionEvent.ACTION_UP //first finger lifted
+                , MotionEvent.ACTION_POINTER_UP //second finger lifted
+            -> {
+                mode = NONE
+                Log.d(TAG, "mode=NONE")
+            }
+            MotionEvent.ACTION_POINTER_DOWN //second finger down
+            -> {
+                oldDist = spacing(event).toFloat() // calculates the distance between two points where user touched.
+                Log.d(TAG, "oldDist=$oldDist")
+                // minimal distance between both the fingers
+                if (oldDist > 5f) {
+                    savedMatrix.set(bitmapMatrix)
+                    midPoint(mid, event) // sets the mid-point of the straight line between two points where user touched.
+                    mode = ZOOM
+                    Log.d(TAG, "mode=ZOOM")
+                }
+            }
+
+            MotionEvent.ACTION_MOVE -> if (mode == DRAG) { //movement of first finger
+                bitmapMatrix?.set(savedMatrix)
+                if (left >= -392) {
+                    bitmapMatrix?.postTranslate(event.x - start.x, event.y - start.y)
+                }
+            } else if (mode == ZOOM) { //pinch zooming
+                val newDist = spacing(event)
+                Log.d(TAG, "newDist=$newDist")
+                if (newDist > 5f) {
+                    bitmapMatrix?.set(savedMatrix)
+                    scale = (newDist / oldDist).toFloat() //thinking I need to play around with this value to limit it**
+                    bitmapMatrix?.postScale(scale, scale, mid.x, mid.y)
+                }
+            }
+        }
+        invalidate()
+        return true
+    }
+
+
+    private fun spacing(event: MotionEvent): Double {
+        val x = event.getX(0) - event.getX(1)
+        val y = event.getY(0) - event.getY(1)
+        return Math.sqrt((x * x + y * y).toDouble())
+    }
+
+    private fun midPoint(point: PointF, event: MotionEvent) {
+        val x = event.getX(0) + event.getX(1)
+        val y = event.getY(0) + event.getY(1)
+        point.set(x / 2, y / 2)
+    }
     constructor(ctx: Context, attributeSet: AttributeSet) : super(ctx, attributeSet) {
         setBackgroundColor(Color.GRAY)
         paint = Paint(Paint.ANTI_ALIAS_FLAG)
