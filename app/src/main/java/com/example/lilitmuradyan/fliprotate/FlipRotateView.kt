@@ -24,7 +24,7 @@ class FlipRotateView : View {
     private val ROTATE_RIGHT = 1
     private val FLIP_HORIZONTALLY = 2
     private val FLIP_VERTICALLY = 3
-    var temporaryProgress = 0f
+    var temporaryRotationProgress = 0f
 
 
     constructor(ctx: Context, attributeSet: AttributeSet) : super(ctx, attributeSet) {
@@ -55,7 +55,7 @@ class FlipRotateView : View {
         mTimerAnimator.addUpdateListener { animation -> rotateWithAnimation(animation.animatedValue as Int, direction) }
         mTimerAnimator.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                temporaryProgress = 0f
+                temporaryRotationProgress = 0f
                 if (direction == ROTATE_LEFT)
                     flipRotateItem.rotateAngle -= 90
                 else flipRotateItem.rotateAngle += 90
@@ -82,9 +82,9 @@ class FlipRotateView : View {
 
     private fun rotateWithAnimation(progress: Int, direction: Int) {
         if (direction == ROTATE_LEFT)
-            bitmapMatrix!!.postRotate(-(progress - temporaryProgress), displayX / 2f, displayY / 2f)
-        else bitmapMatrix!!.postRotate(progress - temporaryProgress, displayX / 2f, displayY / 2f)
-        temporaryProgress = progress.toFloat()
+            bitmapMatrix!!.postRotate(-(progress - temporaryRotationProgress), displayX / 2f, displayY / 2f)
+        else bitmapMatrix!!.postRotate(progress - temporaryRotationProgress, displayX / 2f, displayY / 2f)
+        temporaryRotationProgress = progress.toFloat()
         invalidate()
     }
 
